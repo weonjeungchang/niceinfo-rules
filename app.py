@@ -16,8 +16,17 @@ from src.rag_chain import ConversationalRAGChain
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# 환경 변수 로드
+# 환경 변수 로드 (로컬: .env, Streamlit Cloud: secrets)
 load_dotenv()
+
+# Streamlit Cloud Secrets 지원 함수
+def get_env(key: str, default: str = None) -> str:
+    """환경 변수 가져오기 (Streamlit Secrets 우선, 그 다음 .env)"""
+    # Streamlit Cloud secrets 확인
+    if hasattr(st, 'secrets') and key in st.secrets:
+        return st.secrets[key]
+    # 로컬 .env 파일
+    return os.getenv(key, default)
 
 # 페이지 설정
 st.set_page_config(
@@ -106,12 +115,12 @@ def initialize_rag_system():
     try:
         with st.spinner("RAG 시스템을 초기화하는 중..."):
             # API 키 확인
-            if not os.getenv("OPENAI_API_KEY"):
-                st.error("⚠️ OPENAI_API_KEY가 설정되지 않았습니다. .env 파일을 확인하세요.")
+            if not get_env("OPENAI_API_KEY"):
+                st.error("⚠️ OPENAI_API_KEY가 설정되지 않았습니다. .env 파일 또는 Streamlit Secrets를 확인하세요.")
                 st.stop()
             
             # ChromaDB Cloud 설정 확인
-            use_cloud = os.getenv("CHROMA_API_KEY") is not None
+            use_cloud = get_env("CHROMA_API_KEY") is not None
             
             if use_cloud:
                 st.info("🌐 ChromaDB Cloud를 사용합니다.")
@@ -120,10 +129,10 @@ def initialize_rag_system():
                     chunk_size=1500,  # 더 큰 청크로 변경 (1000 -> 1500)
                     chunk_overlap_percent=10.0,  # 더 많은 오버랩 (4% -> 10%)
                     use_cloud=True,
-                    cloud_api_key=os.getenv("CHROMA_API_KEY"),
-                    cloud_tenant=os.getenv("CHROMA_TENANT"),
-                    cloud_database=os.getenv("CHROMA_DATABASE"),
-                    collection_name=os.getenv("CHROMA_COLLECTION", "niceinfo-rules")
+                    cloud_api_key=get_env("CHROMA_API_KEY"),
+                    cloud_tenant=get_env("CHROMA_TENANT"),
+                    cloud_database=get_env("CHROMA_DATABASE"),
+                    collection_name=get_env("CHROMA_COLLECTION", "niceinfo-rules")
                 )
             else:
                 st.info("💻 로컬 ChromaDB를 사용합니다.")
@@ -176,7 +185,7 @@ def initialize_rag_system():
             # RAG 체인 초기화
             rag_chain = ConversationalRAGChain(
                 vector_store_manager=vs_manager,
-                model_name=os.getenv("OPENAI_MODEL", "gpt-4-turbo-preview"),
+                model_name=get_env("OPENAI_MODEL", "gpt-4-turbo-preview"),
                 temperature=0,
                 similarity_threshold=1.2,  # 더 관대하게 (0.5 -> 1.2)
                 top_k=6  # 더 많은 컨텍스트 (4 -> 6)
@@ -242,7 +251,7 @@ def sidebar():
             st.rerun()
         
         # 문서 재업로드 안내
-        use_cloud = os.getenv("CHROMA_API_KEY") is not None
+        use_cloud = get_env("CHROMA_API_KEY") is not None
         
         if use_cloud:
             # ChromaDB Cloud 사용 시
@@ -289,7 +298,7 @@ def sidebar():
             st.warning("⚠️ 시스템 초기화 필요")
         
         # ChromaDB 정보 표시
-        use_cloud = os.getenv("CHROMA_API_KEY") is not None
+        use_cloud = get_env("CHROMA_API_KEY") is not None
         db_type = "ChromaDB Cloud" if use_cloud else "ChromaDB Local"
         
         st.markdown(f"""
