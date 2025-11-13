@@ -294,8 +294,8 @@ def sidebar():
         # 시스템 정보
         if st.session_state.vectorstore_loaded:
             st.success("✅ 시스템 준비 완료")
-        # else:
-        #     st.warning("⚠️ 시스템 초기화 필요")
+        else:
+            st.warning("⚠️ 시스템 초기화 필요")
         
         # ChromaDB 정보 표시
         use_cloud = get_env("CHROMA_API_KEY") is not None
@@ -305,7 +305,8 @@ def sidebar():
         <div style="font-size: 0.8rem; color: #666; margin-top: 2rem;">
         Powered by OpenAI & LangChain<br>
         Vector DB: {db_type}<br>
-        Model: {get_env("OPENAI_MODEL", "gpt-4-turbo-preview")}
+        Model: {get_env("OPENAI_MODEL", "gpt-4-turbo-preview")}<br>
+        Made by wjjang
         </div>
         """, unsafe_allow_html=True)
 
