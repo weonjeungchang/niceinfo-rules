@@ -123,7 +123,7 @@ def initialize_rag_system():
             use_cloud = get_env("CHROMA_API_KEY") is not None
             
             if use_cloud:
-                st.info("🌐 ChromaDB Cloud를 사용합니다.")
+                # st.info("🌐 ChromaDB Cloud를 사용합니다.")
                 # 벡터 스토어 관리자 초기화 (ChromaDB Cloud)
                 vs_manager = VectorStoreManager(
                     chunk_size=1500,  # 더 큰 청크로 변경 (1000 -> 1500)
@@ -151,7 +151,7 @@ def initialize_rag_system():
                     vs_manager.load_vectorstore()
                     st.session_state.vectorstore_loaded = True
                     logger.info("ChromaDB Cloud에서 벡터 스토어를 로드했습니다.")
-                    st.success("✅ ChromaDB Cloud에서 데이터를 로드했습니다!")
+                    # st.success("✅ ChromaDB Cloud에서 데이터를 로드했습니다!")
                 except Exception as e:
                     logger.error(f"벡터 스토어 로드 실패: {e}")
                     st.error(f"❌ ChromaDB Cloud에서 데이터를 로드할 수 없습니다.")
@@ -304,7 +304,8 @@ def sidebar():
         st.markdown(f"""
         <div style="font-size: 0.8rem; color: #666; margin-top: 2rem;">
         Powered by OpenAI & LangChain<br>
-        Vector DB: {db_type}
+        Vector DB: {db_type}<br>
+        Model: {get_env("OPENAI_MODEL", "gpt-4-turbo-preview")}
         </div>
         """, unsafe_allow_html=True)
 
@@ -337,7 +338,7 @@ def main():
     # 예시 질문 (대화 시작 전에만 표시)
     if len(st.session_state.messages) == 0:
         st.markdown("### 💡 예시 질문")
-        st.markdown("궁금하신 내용을 클릭해보세요:")
+        # st.markdown("궁금하신 내용을 클릭해보세요:")
         
         # 예시 질문 리스트
         example_questions = [
