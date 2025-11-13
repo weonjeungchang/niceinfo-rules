@@ -304,8 +304,7 @@ def sidebar():
         st.markdown(f"""
         <div style="font-size: 0.8rem; color: #666; margin-top: 2rem;">
         Powered by OpenAI & LangChain<br>
-        Vector DB: {db_type}<br>
-        Model: {get_env("OPENAI_MODEL", "gpt-4-turbo-preview")}<br>
+        {db_type} & {get_env("OPENAI_MODEL", "gpt-4-turbo-preview")}<br>
         Made by wjjang
         </div>
         """, unsafe_allow_html=True)
