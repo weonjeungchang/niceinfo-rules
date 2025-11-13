@@ -135,7 +135,7 @@ def initialize_rag_system():
                     collection_name=get_env("CHROMA_COLLECTION", "niceinfo-rules")
                 )
             else:
-                st.info("💻 로컬 ChromaDB를 사용합니다.")
+                # st.info("💻 로컬 ChromaDB를 사용합니다.")
                 # 벡터 스토어 관리자 초기화 (로컬)
                 vs_manager = VectorStoreManager(
                     persist_directory="./chroma_db",
@@ -294,8 +294,8 @@ def sidebar():
         # 시스템 정보
         if st.session_state.vectorstore_loaded:
             st.success("✅ 시스템 준비 완료")
-        else:
-            st.warning("⚠️ 시스템 초기화 필요")
+        # else:
+        #     st.warning("⚠️ 시스템 초기화 필요")
         
         # ChromaDB 정보 표시
         use_cloud = get_env("CHROMA_API_KEY") is not None
